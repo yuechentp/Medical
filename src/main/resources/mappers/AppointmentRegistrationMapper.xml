@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace需对应mapper接口的全限定名 -->
+<mapper namespace="com.iflytek.cn.medical_management.mappers.AppointmentRegistrationMapper">
+
+    <resultMap id="doctorResultMap" type="Doctor">
+        <result property="gender" column="gender"
+                typeHandler="com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler"/>
+        <result property="title" column="title"
+                typeHandler="com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler"/>
+        <result property="status" column="status"
+                typeHandler="com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler"/>
+    </resultMap>
+
+    <!-- 插入患者 -->
+    <insert id="insertPatient" parameterType="Patient">
+        INSERT INTO patients (name, gender, age, id_card, phone, province, city, district, detailed_address, medical_history, allergy_history)
+        VALUES (
+                #{name},
+                #{gender, typeHandler=com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler},
+                #{age, jdbcType=INTEGER},
+                #{id_card},
+                #{phone},
+                #{province},
+                #{city},
+                #{district},
+                #{detailed_address},
+                #{medical_history},
+                #{allergy_history})
+    </insert>
+
+    <!--     预约挂号 -->
+    <insert id="insertAppointment" parameterType="Appointments">
+        INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, appointment_datetime)
+        VALUES (
+                #{patient_id},
+                #{doctor_id},
+                #{appointment_date},
+                #{appointment_time},
+                #{appointment_datetime})
+    </insert>
+
+     <!-- 根据医生名称或职称查询医生信息 -->
+    <select id="queryDoctorByNameOrTitle" parameterType="String" resultMap="doctorResultMap">
+        SELECT * FROM doctors WHERE name LIKE #{query} OR title LIKE #{query}
+    </select>
+
+     <!-- 根据医生ID查询挂号信息按时间排序 -->
+    <select id="queryAppointmentByDoctorId" parameterType="Appointments">
+        SELECT p.name as patient_name, a.*
+                FROM appointments a inner join patients p on a.patient_id = p.patient_id
+                WHERE a.doctor_id = #{doctor_id}
+                ORDER BY a.appointment_datetime
+    </select>
+
+</mapper>

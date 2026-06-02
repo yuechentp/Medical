@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace需对应mapper接口的全限定名 -->
+<mapper namespace="com.iflytek.cn.medical_management.mappers.MedicalInformationMapper">
+
+    <resultMap id="LoginMap" type="User">
+        <result property="type" column="type"
+                typeHandler="com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler"/>
+    </resultMap>
+
+    <!--    添加用户    -->
+    <insert id="registerUser" parameterType="User">
+        INSERT INTO users (
+            account,
+            password,
+            type
+        ) VALUES (
+            #{account},
+            #{password},
+            #{type, typeHandler=com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler}
+        )
+    </insert>
+
+    <!--    查询用户    -->
+    <select id="queryUser" parameterType="String" resultMap="LoginMap">
+        SELECT * FROM users WHERE account = #{account} AND password = #{password}
+    </select>
+
+    <!--    当user_id不存在时，更新用户信息    -->
+    <update id="updateUser" parameterType="User">
+        update users
+        set user_id = #{user_id, jdbcType=INTEGER}
+        where id = #{id, jdbcType=INTEGER}
+        and user_id is null
+    </update>
+
+    <!-- 插入患者病历 -->
+    <insert id="insertPatientRecords" parameterType="MedicalRecords">
+        INSERT INTO medical_records (
+            patient_id,
+            doctor_id,
+            visit_date,
+            visit_type,
+            chief_complaint,
+            present_illness,
+            final_diagnosis,
+            treatment_plan,
+            prescription,
+            lab_results,
+            notes
+        ) VALUES (
+            #{patient_id, jdbcType=INTEGER},
+            #{doctor_id, jdbcType=INTEGER},
+            #{visit_date, jdbcType=DATE},
+            #{visit_type, typeHandler=com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler},
+            #{chief_complaint},
+            #{present_illness},
+            #{final_diagnosis},
+            #{treatment_plan},
+            #{prescription},
+            #{lab_results},
+            #{notes}
+        )
+    </insert>
+
+    <!-- 更新患者病历 -->
+    <update id="updatePatientRecords" parameterType="MedicalRecords">
+        update medical_records
+        set patient_id = #{patient_id, jdbcType=INTEGER},
+            doctor_id = #{doctor_id, jdbcType=INTEGER},
+            visit_date = #{visit_date, jdbcType=DATE},
+            visit_type = #{visit_type, typeHandler=com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler},
+            chief_complaint = #{chief_complain},
+            present_illness = #{present_illness},
+            final_diagnosis = #{final_diagnosis},
+            treatment_plan = #{treatment_plan},
+            prescription = #{prescription},
+            lab_results = #{lab_results},
+            notes = #{notes}
+        where record_id = #{record_id, jdbcType=INTEGER}
+    </update>
+
+</mapper>

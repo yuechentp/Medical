@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace需对应mapper接口的全限定名 -->
+<mapper namespace="com.iflytek.cn.medical_management.mappers.ConditionQueryMapper">
+
+    <resultMap id="doctorResultMap" type="MedicalRecords">
+        <result property="visit_type" column="visit_type"
+                typeHandler="com.iflytek.cn.medical_management.enums.handler.GenericEnumTypeHandler"/>
+    </resultMap>
+
+    <!-- 查询患者病历 -->
+    <select id="selectPatientRecords" parameterType="int" resultMap="doctorResultMap">
+        select m.*, d.name as doctor_name, p.name as patient_name from medical_records m
+        inner join doctors d on m.doctor_id = d.doctor_id
+        inner join patients p on m.patient_id = p.patient_id
+        where m.patient_id = #{patient_id}
+    </select>
+
+</mapper>
